@@ -124,6 +124,22 @@ vr-robot-platform/
 
 ---
 
+## Schnellstart
+
+```bash
+npm install         # Root (für concurrently)
+cd frontend && npm install
+cd backend && npm install
+```
+
+Danach .env im backend anlegen (siehe backend/.env.example).
+Und wieder im Rootverzeichnis:
+
+```bash
+npm run dev         # Startet Frontend & Backend gleichzeitig
+npm run seed        # Tabelle "tasks" in DB erstellen und Beispiel-Daten in DB einfügen
+```
+
 ### 📦 Backend starten
 
 ```bash
@@ -155,7 +171,7 @@ npm run dev
 
 ```bash
 cd seed
-ts-node seedTasks.ts
+ts-node seedTasks2.ts
 ```
 
 - Löscht bestehende Tasks und zugehörige Simulationen
@@ -194,7 +210,8 @@ ts-node seedTasks.ts
 
 ## 📮 Kontakt
 
-Erstellt im Rahmen einer Diplomarbeit.  
-Bei Fragen oder Interesse: **[Kontaktperson: Vera Matthes]**
+Erstellt im Rahmen einer Diplomarbeit an der TU Dresden.  
+Bei Fragen oder Interesse: **[Kontaktperson: Fritz Matthess]**
 
 ---
+# vr-robot-platform
