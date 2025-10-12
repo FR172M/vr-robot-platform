@@ -1,3 +1,6 @@
 .DS_Store
 *.zip
-node_modules/
+*.pdf
+node_modules
+backend/src/public/uploads
+backend/.env
