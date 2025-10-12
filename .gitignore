@@ -2,5 +2,17 @@
 *.zip
 *.pdf
 node_modules
+vr-simulation
+
 backend/src/public/uploads
+backend/src/test.ts
+backend/src/utils/testTmpSimulationManager.ts
 backend/.env
+backend/.gitignore
+backend/ReadMe.md
+
+frontend/.gitignore
+frontend/favicon_C.png
+frontend/src/test.ts
+frontend/ReadMe.md
+
