@@ -3,96 +3,146 @@ import express from 'express';
 import multer from 'multer';
 import path from 'path';
 import fs from 'fs';
-import {extractSimulation, getSimulationZipPath} from '../utils/simulationManager';
-
+import { extractSimulation, getSimulationZipPath } from '../utils/simulationManager';
 
 import {
     getTasks,
     postTask,
     deleteTask,
-    updateTask, getTaskById,
+    updateTask,
+    getTaskById,
 } from '../controllers/taskController';
 
 import {
-    uploadSimulation,
-    downloadSimulation
+    downloadWorkSimulation,
+    downloadSolutionSimulation,
+    downloadPdf,
+    uploadWorkSimulation,
+    uploadSolutionSimulation,
+    uploadPdf
 } from '../controllers/uploadController';
+import {deleteSimulationFolder, scheduleCleanup} from '../utils/tmpSimulationManager';
+
 
 const router = express.Router();
 
-// --- CRUD ---
-router.get('/task', getTasks);
-router.post('/task', postTask);
-router.delete('/task/:id', deleteTask);
-router.put('/task/:id', updateTask);
+// ----------------- CRUD -----------------
+router.get('/tasks', getTasks);
+router.post('/tasks', postTask);
+router.get('/tasks/:id', getTaskById);
+router.put('/tasks/:id', updateTask);
+router.delete('/tasks/:id', deleteTask);
 
-// --- Multer Setup ---
+// ----------------- Multer Setup -----------------
 const storage = multer.diskStorage({
-    destination: function (req, file, cb) {
+    destination: (req, file, cb) => {
         const taskId = req.params.id;
-        const uploadPath = path.join(__dirname, '../public/uploads', taskId);
+        let variant: string;
 
-        // ❗ Alte Dateien VOR dem Upload löschen
-        if (fs.existsSync(uploadPath)) {
-            fs.readdirSync(uploadPath).forEach(fileName => {
-                fs.unlinkSync(path.join(uploadPath, fileName));
-            });
-            console.log(`♻️ Alte Dateien im Ordner ${uploadPath} gelöscht`);
+        if (req.path.includes('upload-work-simulation')) {
+            variant = 'work';
+        } else if (req.path.includes('upload-solution-simulation')) {
+            variant = 'solution';
+        } else if (req.path.includes('upload-worksheet')) {
+            variant = 'worksheet';
+        } else {
+            variant = 'misc';
         }
 
-        fs.mkdirSync(uploadPath, { recursive: true });
+        const uploadPath = path.join(__dirname, '../public/uploads', taskId, variant);
+
+        // Ordner erstellen, aber **nicht löschen**, wenn du mehrere Dateien behalten willst
+        if (!fs.existsSync(uploadPath)) {
+            fs.mkdirSync(uploadPath, { recursive: true });
+        }
+
         cb(null, uploadPath);
     },
-    filename: function (req, file, cb) {
-        cb(null, file.originalname); // Originalname beibehalten
-    }
+    filename: (req, file, cb) => cb(null, file.originalname),
 });
 
 const upload = multer({ storage });
-3
-// --- Upload + Download ---
-router.post('/tasks/:id/upload-simulation', upload.single('simulation'), uploadSimulation);
-router.get('/tasks/:id/download-simulation', downloadSimulation);
 
-// --- GET Task by ID ---
-router.get('/tasks/:id', getTaskById);
 
-router.get('/:id/view-simulation', async (req, res) => {
+// ----------------- Upload Routes -----------------
+router.post('/tasks/:id/upload-work-simulation', upload.single('simulation'), uploadWorkSimulation);
+router.post('/tasks/:id/upload-solution-simulation', upload.single('simulation'), uploadSolutionSimulation);
+router.post('/tasks/:id/upload-worksheet', upload.single('pdf'), uploadPdf);
+
+// ----------------- Download Routes -----------------
+router.get('/tasks/:id/download-work-simulation', downloadWorkSimulation);
+router.get('/tasks/:id/download-solution-simulation', downloadSolutionSimulation);
+router.get('/tasks/:id/download-worksheet', downloadPdf);
+
+// ----------------- View Simulation -----------------
+
+router.get('/:id/view-simulation/:variant', async (req, res) => {
+    const { id: taskId, variant } = req.params;
+
+    if (variant !== 'work' && variant !== 'solution')
+        return res.status(400).send('Invalid variant');
+
+    const zipPath = await getSimulationZipPath(taskId, variant as 'work' | 'solution');
+    console.log(zipPath)
+    if (!zipPath) return res.status(404).send('Simulation ZIP not found');
+
+    const extractDir = await extractSimulation(taskId, zipPath, variant as 'work' | 'solution');
+    if (!extractDir) return res.status(404).send('Failed to extract simulation');
+
+    // Prüfen, ob index.html existiert
+    const indexPath = path.join(extractDir, 'index.html');
+    if (!fs.existsSync(indexPath)) return res.status(404).send('index.html not found');
+
+    // Dynamischen Pfad einmalig registrieren
+    const mountPath = `/simulation/${taskId}/${variant}`;
+    if (!(req.app as any)._mountedSimulations) (req.app as any)._mountedSimulations = new Set<string>();
+    if (!(req.app as any)._mountedSimulations.has(mountPath)) {
+        (req.app as any)._mountedSimulations.add(mountPath);
+        req.app.use(mountPath, express.static(extractDir));
+    }
+
+    res.redirect(`${mountPath}/index.html`);
+});
+
+// TMP-Ordner löschen (work + solution)
+router.post('/:id/clear-tmp', async (req, res) => {
     const taskId = req.params.id;
-
     try {
-        // 1. Simulation-Dateipfad aus DB holen
-        const zipPath = await getSimulationZipPath(taskId);
-        if (!zipPath || !fs.existsSync(zipPath)) {
-            return res.status(404).send('Simulation zip not found');
-        }
-
-        // 2. Simulation entpacken
-        const extractedPath = await extractSimulation(taskId, zipPath);
-
-        // 3. index.html ausgeben
-        res.sendFile(path.join(extractedPath, 'index.html'));
+        await deleteSimulationFolder(taskId, 'work');
+        await deleteSimulationFolder(taskId, 'solution');
+        res.status(200).json({ message: 'TMP folders deleted' });
     } catch (err) {
-        console.error('Error extracting or serving simulation:', err);
-        res.status(500).send('Simulation error');
+        console.error(err);
+        res.status(500).json({ error: 'Failed to delete TMP folders' });
     }
 });
 
+// ----------------- Simulation Closed -----------------
+router.post('/:id/simulation-closed/:variant', async (req, res) => {
+    console.log("🔥 cleanup route HIT", req.params);
 
+    const { id: taskId, variant } = req.params;
+    if (variant !== 'work' && variant !== 'solution')
+        return res.status(400).send('Invalid variant');
 
+    const folderPath = path.join(__dirname, `../../tmp/simulations/${taskId}/${variant}`);
+    scheduleCleanup(folderPath, `${taskId}_${variant}`);
 
-router.use('/:id', (req, res, next) => {
-    const taskId = req.params.id;
-    const staticDir = path.join(__dirname, '../../tmp/simulations', taskId);
+    console.log(`🕑 Cleanup timer set for simulation ${taskId} (${variant})`);
+    res.status(200).json({ message: 'Cleanup timer scheduled' });
+});
 
-    // Wenn Datei existiert → direkt senden
-    const filePath = path.join(staticDir, req.path.replace(`/${taskId}`, ''));
+// ----------------- Simulation Keepalive -----------------
+router.post('/:id/simulation-keepalive/:variant', async (req, res) => {
+    const { id: taskId, variant } = req.params;
+    if (variant !== 'work' && variant !== 'solution')
+        return res.status(400).send('Invalid variant');
 
-    if (fs.existsSync(filePath)) {
-        return res.sendFile(filePath);
-    }
+    const folderPath = path.join(__dirname, `../../tmp/simulations/${taskId}/${variant}`);
+    scheduleCleanup(folderPath, `${taskId}_${variant}`); // Timer wird resettet
 
-    next();
+    console.log(`💓 Keepalive received for simulation ${taskId} (${variant})`);
+    res.status(200).json({ message: 'Keepalive OK' });
 });
 
 

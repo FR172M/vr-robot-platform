@@ -5,11 +5,13 @@ import { v4 as uuidv4 } from 'uuid';
 import path from "path";
 import fs from "fs";
 import {query} from "../db";
+import {dbRowToTask} from "../utils/taskMapper";
 
 export const getTasks = async (req: Request, res: Response) => {
     try {
         const tasks = await getAllTasks();
         res.json(tasks);
+
     } catch (err) {
         console.error('❌ Failed to fetch tasks:', err);
         res.status(500).json({ error: 'Failed to fetch tasks' });
@@ -26,13 +28,12 @@ export const getTaskById = async (req: Request, res: Response) => {
             return res.status(404).json({ error: 'Task not found' });
         }
 
-        res.json(taskResult.rows[0]);
+        res.json(dbRowToTask(taskResult.rows[0]));
     } catch (err) {
         console.error('❌ Error fetching task by ID:', err);
         res.status(500).json({ error: 'Internal server error' });
     }
 };
-
 
 export const postTask = async (req: Request, res: Response) => {
     try {
@@ -40,7 +41,7 @@ export const postTask = async (req: Request, res: Response) => {
 
         const task = {
             id: uuidv4(),
-            created_at: new Date().toISOString(),
+            createdAt: new Date().toISOString(),
             ...req.body,
         };
 
@@ -48,7 +49,7 @@ export const postTask = async (req: Request, res: Response) => {
 
         await createTask(task);
 
-        res.status(201).json({ message: 'Task created successfully' });
+        res.status(201).json({ message: 'Task created successfully', id: task.id });
     } catch (err) {
         console.error('taskController.ts: ❌ Error saving task:', err); // Vollständiges Error Logging
         res.status(500).json({ error: 'Failed to save task' });

@@ -3,9 +3,10 @@
 import axios from 'axios';
 import {Task} from '../types/Task';
 
-export const saveTask = async (task: Task): Promise<void> => {
+export const
+    saveTask = async (task: Task): Promise<void> => {
     try {
-        return await axios.post(`/api/task`, task);
+        return await axios.post(`/api/tasks`, task);
     } catch (error) {
         console.error('❌ Error saving task:', error);
     }
@@ -13,7 +14,7 @@ export const saveTask = async (task: Task): Promise<void> => {
 
 export const getTasks = async (): Promise<Task[]> => {
     try {
-        const response = await axios.get(`/api/task`);
+        const response = await axios.get(`/api/tasks`);
         return response.data;
     } catch (error) {
         console.error('Error loading tasks:', error);
@@ -24,6 +25,7 @@ export const getTasks = async (): Promise<Task[]> => {
 export const getTaskById = async (taskId: string) => {
     try {
         const response = await axios.get(`/api/tasks/${taskId}`);
+
         return response.data;
     } catch (error) {
         console.error('Error loading taskByID:', error);
@@ -34,7 +36,7 @@ export const getTaskById = async (taskId: string) => {
 export const deleteTask = async (id: string): Promise<void> => {
     try {
         console.log("deleting: " + id);
-        await axios.delete(`/api/task/${id}`);
+        await axios.delete(`/api/tasks/${id}`);
     } catch (error) {
         console.error('Error deleting task:', error);
     }
@@ -42,7 +44,7 @@ export const deleteTask = async (id: string): Promise<void> => {
 
 export const updateTask = async (id: string, task: Task): Promise<void> => {
     try {
-        await axios.put(`/api/task/${id}`, task);
+        await axios.put(`/api/tasks/${id}`, task);
     } catch (error) {
         console.error('Error updating task:', error);
     }

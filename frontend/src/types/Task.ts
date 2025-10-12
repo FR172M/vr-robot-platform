@@ -1,12 +1,15 @@
-// src/types/Task.ts
+// frontend/src/types/Task.ts
 export interface Task {
     id: string;
     title: string;
-    description: string;
-    difficulty: 'Easy' | 'Medium' | 'Hard';
-    pseudocode: string;
-    createdAt: string;
-    startDate: string;
-    dueDate: string;
+    description?: string;
+    difficulty?: string;
+    pseudocode?: string;
+    sampleSolution?: string;
+    worksheetPath?: string;      // ✅ einheitlich worksheetPath
+    simWorkPath?: string;
+    simSolutionPath?: string;
+    startDate?: string;
+    dueDate?: string;
+    createdAt?: string;
 }
-

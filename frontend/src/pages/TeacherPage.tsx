@@ -4,12 +4,12 @@ import {
     Box,
     Button,
     Container,
-    Divider,
+    Divider, IconButton,
     MenuItem,
     Select,
     Stack,
     Tab,
-    Tabs,
+    Tabs, Toolbar,
     Typography,
 } from '@mui/material';
 import React, {useEffect, useMemo, useState} from 'react';
@@ -22,8 +22,11 @@ import isSameOrAfter from 'dayjs/plugin/isSameOrAfter';
 import localizedFormat from 'dayjs/plugin/localizedFormat';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import TaskCard from '../components/TaskCard';
-import {AddCircleOutline, CancelOutlined, CloseOutlined} from '@mui/icons-material';
+import {AddCircleOutline, CancelOutlined, Brightness7, Brightness4} from '@mui/icons-material';
 import TaskForm from '../components/TaskForm';
+import {useColorMode} from "../ThemeContext";
+import {useTheme} from '@mui/material/styles';
+
 
 dayjs.extend(isSameOrBefore);
 dayjs.extend(isSameOrAfter);
@@ -31,13 +34,18 @@ dayjs.extend(localizedFormat);
 dayjs.extend(relativeTime);
 
 const TeacherPage = () => {
+
+    const theme = useTheme();
+    const {toggleColorMode} = useColorMode();
+
     const navigate = useNavigate();
     const [tasks, setTasks] = useState<Task[]>([]);
     const [tabIndex, setTabIndex] = useState(1);
     const [expanded, setExpanded] = useState<string>('');
     const [subTab, setSubTab] = useState('description');
     const [sortKey, setSortKey] = useState<'date' | 'difficulty' | 'name'>('date');
-    const [createMode, setCreateMode] = useState(false); // NEU
+    const [createMode, setCreateMode] = useState(false);
+    const [closeCreateMode, setCloseCreateMode] = useState(false);
 
     const now = dayjs();
 
@@ -45,9 +53,6 @@ const TeacherPage = () => {
         const data = await getTasks();
         const normalized = data.map((task) => ({
             ...task,
-            startDate: task.start_date,
-            dueDate: task.due_date,
-            createdAt: task.created_at,
         }));
         setTasks(normalized);
     };
@@ -117,9 +122,34 @@ const TeacherPage = () => {
         fetchTasks();
     }, []);
 
-    const handleDownload = (taskId: string) => {
-        window.open(`/api/tasks/${taskId}/download-simulation`, '_blank');
+    useEffect(() => {
+        document.title = `Teacher Page`;
+        return () => {
+            document.title = "VR Robot Platform";
+        };
+    }, []);
+
+    const handleDownload = (taskId: string, variant: "Solution" | "Work" | "Pdf") => {
+        let endpoint = "";
+
+        switch (variant.toLowerCase()) {
+            case "solution":
+                endpoint = "download-solution-simulation";
+                break;
+            case "work":
+                endpoint = "download-work-simulation";
+                break;
+            case "pdf":
+                endpoint = "download-worksheet";
+                break;
+            default:
+                console.error("❌ Unknown variant:", variant);
+                return;
+        }
+
+        window.open(`/api/tasks/${taskId}/${endpoint}`, "_blank");
     };
+
 
     const toggleExpand = (taskId: string) => {
         setExpanded(expanded === taskId ? '' : taskId);
@@ -144,7 +174,16 @@ const TeacherPage = () => {
                 <Typography variant="h4">Manage Tasks</Typography>
 
                 <Stack direction="row" spacing={2}>
-                    <Button onClick={() => navigate('/')}>Logout</Button>
+                    <Button onClick={() => {
+                        sessionStorage.removeItem("role")
+                        navigate('/')
+                    }}>
+                        Logout
+                    </Button>
+
+                    <IconButton color="inherit" onClick={toggleColorMode}>
+                        {theme.palette.mode === 'dark' ? <Brightness7/> : <Brightness4/>}
+                    </IconButton>
                 </Stack>
             </Box>
 
@@ -161,7 +200,16 @@ const TeacherPage = () => {
                         spacing={2}
                         divider={<Divider orientation="vertical" flexItem/>}
                     >
-                        <Button onClick={() => setCreateMode(!createMode)}>
+                        <Button onClick={() => {
+                            if (createMode) {
+                                if (confirm("Leave Task creation?")) {
+                                    setCreateMode(false);
+                                    fetchTasks();
+                                }
+                            } else {
+                                setCreateMode(true);
+                            }
+                        }}>
                             {createMode ?
                                 <CancelOutlined/>
                                 :
@@ -225,11 +273,15 @@ const TeacherPage = () => {
                                 onDelete={handleDelete}
                                 onUpdated={reloadTasks}
                                 fetchTasks={fetchTasks}
+                                tabIndex={tabIndex}
                             />
                         ))}
                     </Stack>
                 )}
             </>
+            <Toolbar/>
+
+
         </Container>
     );
 };

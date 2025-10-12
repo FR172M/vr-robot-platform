@@ -1,33 +1,33 @@
-// src/pages/LandingPage.tsx
-import React, { useState } from 'react';
+import React, {useState} from 'react';
 import {
-    Box,
-    Button,
-    Container,
-    Typography,
-    Paper,
-    TextField,
+    Box, Button, Container, Typography, Paper,
+    TextField, Stack, Divider, IconButton, InputAdornment
 } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
+import {useNavigate} from 'react-router-dom';
+import {VisibilityOff, Visibility} from "@mui/icons-material";
 
-const LandingPage: React.FC = () => {
+interface LandingPageProps {
+    setRole: React.Dispatch<React.SetStateAction<string | null>>;
+}
+
+const LandingPage: React.FC<LandingPageProps> = ({ setRole }) => {
     const navigate = useNavigate();
 
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [showPassword, setShowPassword] = useState(false);
 
     const handleLogin = (role: 'teacher' | 'student') => {
-        {/* // Simulierter Dummy-Login
-            if (!email || !password) {
-                alert('Please enter email and password');
-                return;
-            }
-        */}
-
-        if (role === 'teacher') {
+        if (role === 'teacher' && password === 'teacher') {
+            sessionStorage.setItem("role", "teacher");
+            setRole("teacher"); // <-- direkt im State speichern
             navigate('/teacher');
-        } else {
+        } else if (role === 'student' && password === 'student') {
+            sessionStorage.setItem("role", "student");
+            setRole("student");
             navigate('/student');
+        } else {
+            alert('Please enter correct password');
         }
     };
 
@@ -53,28 +53,46 @@ const LandingPage: React.FC = () => {
 
                     <TextField
                         label="Password"
-                        type="password"
+                        type={showPassword ? "text" : "password"}
                         variant="outlined"
                         fullWidth
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
+                        InputProps={{
+                            endAdornment: (
+                                <InputAdornment position="end">
+                                    <IconButton onClick={() => setShowPassword(!showPassword)}>
+                                        {showPassword ? <Visibility /> : <VisibilityOff />}
+                                    </IconButton>
+                                </InputAdornment>
+                            )
+                        }}
                     />
 
-                    <Button
-                        variant="contained"
-                        color="primary"
-                        onClick={() => handleLogin('teacher')}
-                    >
-                        Login as Teacher
-                    </Button>
+                    <Divider sx={{
+                        mx: 10,
+                        "&::before, &::after": { borderColor: 'text.primary' }
+                    }}>
+                        <Typography variant="body2">Login as</Typography>
+                    </Divider>
 
-                    <Button
-                        variant="outlined"
-                        color="secondary"
-                        onClick={() => handleLogin('student')}
-                    >
-                        Login as Student
-                    </Button>
+                    <Stack direction="row" justifyContent="space-between" spacing={2}>
+                        <Button
+                            variant="contained"
+                            onClick={() => handleLogin('teacher')}
+                            sx={{ flexGrow: 1 }}
+                        >
+                            Teacher
+                        </Button>
+
+                        <Button
+                            variant="outlined"
+                            onClick={() => handleLogin('student')}
+                            sx={{ flexGrow: 1 }}
+                        >
+                            Student
+                        </Button>
+                    </Stack>
                 </Box>
             </Paper>
         </Container>

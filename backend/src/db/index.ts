@@ -1,4 +1,4 @@
-// backend/src/db/indes.ts
+// backend/src/db/index.ts
 import { Pool } from 'pg';
 import dotenv from 'dotenv';
 

@@ -3,24 +3,31 @@
 import {
     Box,
     Button,
-    Container,
+    Container, IconButton,
     MenuItem,
     Select,
     Stack,
     Tab,
-    Tabs,
+    Tabs, Toolbar,
     Typography,
 } from '@mui/material';
-import { useEffect, useMemo, useState } from 'react';
-import { getTasks } from '../services/taskService';
-import { Task } from '../types/Task';
-import { useNavigate } from 'react-router-dom';
+import {
+    Brightness7,
+    Brightness4
+} from '@mui/icons-material';
+
+import React, {useEffect, useMemo, useState} from 'react';
+import {getTasks} from '../services/taskService';
+import {Task} from '../types/Task';
+import {useNavigate} from 'react-router-dom';
 import dayjs from 'dayjs';
 import isSameOrBefore from 'dayjs/plugin/isSameOrBefore';
 import isSameOrAfter from 'dayjs/plugin/isSameOrAfter';
 import localizedFormat from 'dayjs/plugin/localizedFormat';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import TaskCard from '../components/TaskCard';
+import {useColorMode} from "../ThemeContext";
+import {useTheme} from '@mui/material/styles';
 
 dayjs.extend(isSameOrBefore);
 dayjs.extend(isSameOrAfter);
@@ -28,6 +35,10 @@ dayjs.extend(localizedFormat);
 dayjs.extend(relativeTime);
 
 const StudentPage = () => {
+
+    const theme = useTheme();
+    const {toggleColorMode} = useColorMode();
+
     const navigate = useNavigate();
     const [tasks, setTasks] = useState<Task[]>([]);
     const [tabIndex, setTabIndex] = useState(1);
@@ -42,9 +53,6 @@ const StudentPage = () => {
         const data = await getTasks();
         const normalized = data.map((task) => ({
             ...task,
-            startDate: task.start_date,
-            dueDate: task.due_date,
-            createdAt: task.created_at,
         }));
         setTasks(normalized);
     };
@@ -59,7 +67,7 @@ const StudentPage = () => {
                 }
                 return dayjs(a.dueDate).isAfter(dayjs(b.dueDate)) ? 1 : -1;
             } else if (sortKey === 'difficulty') {
-                const order = { Easy: 0, Medium: 1, Hard: 2 };
+                const order = {Easy: 0, Medium: 1, Hard: 2};
                 return (order[a.difficulty] ?? 3) - (order[b.difficulty] ?? 3);
             } else if (sortKey === 'name') {
                 return a.title.localeCompare(b.title);
@@ -112,9 +120,32 @@ const StudentPage = () => {
     useEffect(() => {
         fetchTasks();
     }, []);
+    useEffect(() => {
+        document.title = `Student Page`;
+        return () => {
+            document.title = "VR Robot Platform";
+        };
+    }, []);
 
-    const handleDownload = (taskId: string) => {
-        window.open(`/api/tasks/${taskId}/download-simulation`, '_blank');
+    const handleDownload = (taskId: string, variant: "Solution" | "Work" | "Pdf") => {
+        let endpoint = "";
+
+        switch (variant.toLowerCase()) {
+            case "solution":
+                endpoint = "download-solution-simulation";
+                break;
+            case "work":
+                endpoint = "download-work-simulation";
+                break;
+            case "pdf":
+                endpoint = "download-worksheet";
+                break;
+            default:
+                console.error("❌ Unknown variant:", variant);
+                return;
+        }
+
+        window.open(`/api/tasks/${taskId}/${endpoint}`, "_blank");
     };
 
     const toggleExpand = (taskId: string) => {
@@ -129,10 +160,22 @@ const StudentPage = () => {
     };
 
     return (
-        <Container sx={{ mt: 4 }}>
+        <Container sx={{mt: 4}}>
             <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
                 <Typography variant="h4">Available Tasks</Typography>
-                <Button onClick={() => navigate('/')}>Logout</Button>
+
+                <Stack direction="row" spacing={2}>
+                    <Button onClick={() => {
+                        sessionStorage.removeItem("role")
+                        navigate('/')
+                    }}>
+                        Logout
+                    </Button>
+                    <IconButton color="inherit" onClick={toggleColorMode}>
+                        {theme.palette.mode === 'dark' ? <Brightness7/> : <Brightness4/>}
+                    </IconButton>
+                </Stack>
+
             </Box>
 
             <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
@@ -145,16 +188,16 @@ const StudentPage = () => {
                         setSubTab('description');
                     }}
                 >
-                    <Tab label="Previous" />
-                    <Tab label="Current" />
-                    <Tab label="Upcoming" />
+                    <Tab label="Previous"/>
+                    <Tab label="Current"/>
+                    <Tab label="Upcoming"/>
                 </Tabs>
 
                 <Select
                     size="small"
                     value={sortKey}
                     onChange={(e) => setSortKey(e.target.value as any)}
-                    sx={{ minWidth: 160 }}
+                    sx={{minWidth: 160}}
                 >
                     <MenuItem value="date">Sort by Date</MenuItem>
                     <MenuItem value="difficulty">Sort by Difficulty</MenuItem>
@@ -172,9 +215,11 @@ const StudentPage = () => {
                         subTab={subTab}
                         setSubTab={setSubTab}
                         onDownload={handleDownload}
+                        tabIndex={tabIndex}
                     />
                 ))}
             </Stack>
+            <Toolbar/>
         </Container>
     );
 };
