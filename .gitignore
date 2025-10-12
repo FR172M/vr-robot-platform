@@ -1,6 +1,7 @@
 .DS_Store
 *.zip
 *.pdf
+.gitignore
 node_modules
 vr-simulation
 
@@ -17,4 +18,3 @@ frontend/.gitignore
 frontend/favicon_C.png
 frontend/src/test.ts
 frontend/ReadMe.md
-
