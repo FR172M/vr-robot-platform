@@ -2,7 +2,8 @@
 
 *Dieses README wurde nach Analyse des Projekts durch KI automatisch erstellt. Es beschreibt die aktuell implementierten Features, die Architektur, die wichtigsten Endpunkte, Entwicklungs- und Deployment-Hinweise sowie Troubleshooting.*
 
-- [Link zum PRD:](PRD.md)
+- [Installationsanleitung](INSTALLATION.md)
+- [Link zum PRD](PRD.md)
 
 ---
 

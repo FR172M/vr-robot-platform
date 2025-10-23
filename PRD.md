@@ -136,11 +136,11 @@ Sie kann beliebige Roboter, Sensoren, Umgebungen und Steuerungslogiken integrier
 
 ## 10. Roadmap
 
-| Phase     | Zeitraum       | Ziel                                               |
-|-----------|----------------|----------------------------------------------------|
-| MVP       | 2025 Q3–Q4     | Universitäre Lehre, lokale Simulationen            |
-| Phase 2   | 2026 Q1–Q3     | Echtzeit-Kopplung mit realen Robotern             |
-| Phase 3   | 2026 Q4+       | Vollständige hybride Plattform mit Cloud-Integration |
+| Phase     | Zeitraum   | Ziel                                               |
+|-----------|------------|----------------------------------------------------|
+| MVP       | 2025 Q3–Q4 | Universitäre Lehre, lokale Simulationen            |
+| Phase 2   | 2026 Q1–Q4 | Echtzeit-Kopplung mit realen Robotern             |
+| Phase 3   | 2027 Q1++  | Vollständige hybride Plattform mit Cloud-Integration |
 
 ---
 
