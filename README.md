@@ -43,8 +43,9 @@ Die **VR Robot Platform** ist ein TypeScript/Node + React (Vite) + PostgreSQL Pr
 │ └─ package.json           # Frontend-Abhängigkeiten & Scripts
 │
 ├─ package.json             # Root-Skripte (concurrently: dev, seed)
+├─ README.md                # Projektbeschreibung, Hinweise, Updates
 ├─ INSTALLATION.md          # Installations- und Setup-Anleitung
-└─ README.md                # Projektbeschreibung, Hinweise, Updates
+└─ PRD.md                   # Produktanforderungsdokument
 ```
 
 

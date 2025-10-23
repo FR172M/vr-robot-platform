@@ -155,8 +155,9 @@ Im Backend-Log sollte bei Python-Codeausführung eine Zeile ähnlich dieser ersc
 │ └─ package.json           # Frontend-Abhängigkeiten & Scripts
 │
 ├─ package.json             # Root-Skripte (concurrently: dev, seed)
+├─ README.md                # Projektbeschreibung, Hinweise, Updates
 ├─ INSTALLATION.md          # Installations- und Setup-Anleitung
-└─ README.md                # Projektbeschreibung, Hinweise, Updates
+└─ PRD.md                   # Produktanforderungsdokument
 ```
 ## 10. Fehlerbehebung
 
