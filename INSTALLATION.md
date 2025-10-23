@@ -135,28 +135,28 @@ Im Backend-Log sollte bei Python-Codeausführung eine Zeile ähnlich dieser ersc
 ```
 ## 9. Projektstruktur
 ```bash
-
-/
-├─ backend/
-│   ├─ src/
-│   │   ├─ controllers/      # Express Controller (Tasks, Upload, Code)
-│   │   ├─ routes/           # API-Endpunkte
-│   │   ├─ db/               # PostgreSQL Verbindung
-│   │   ├─ utils/            # Helper (Docker, Dateiverwaltung)
-│   │   ├─ public/uploads/   # gespeicherte Dateien
-│   │   └─ seed/             # Beispiel-Tasks & Simulationen
-│   ├─ .env
-│   ├─ package.json
-│   └─ tsconfig.json
+/vr-robot-platform          # Repository Root
+├─ backend/                 # Express + TypeScript Backend
+│ ├─ src/
+│ │ ├─ controllers/         # Express Controller (Tasks, Upload, Code)
+│ │ ├─ routes/              # API-Endpunkte (taskRoutes.ts, codeRoutes.ts)
+│ │ ├─ db/                  # PostgreSQL-Verbindung und Helper
+│ │ ├─ utils/               # Helfer (DockerRunner, SimulationManager, tmpSimulationManager)
+│ │ ├─ public/uploads/      # Hochgeladene Dateien / Simulationen
+│ │ └─ seed/                # seedTasks.ts + Beispiel-Simulationen
+│ ├─ .env                   # lokal zu erstellen! Umgebungsvariablen (DB-Zugang etc.)
+│ ├─ package.json           # Backend-spezifische Abhängigkeiten & Scripts
+│ └─ tsconfig.json          # TypeScript-Konfiguration
 │
-├─ frontend/
-│   ├─ src/
-│   ├─ public/
-│   ├─ vite.config.ts
-│   └─ package.json
+├─ frontend/                # React + Vite Frontend
+│ ├─ src/                   # Komponenten, Pages, Store, Utils
+│ ├─ public/                # Statische Assets
+│ ├─ vite.config.ts         # Vite-Konfiguration
+│ └─ package.json           # Frontend-Abhängigkeiten & Scripts
 │
-├─ package.json
-└─ INSTALLATION.md
+├─ package.json             # Root-Skripte (concurrently: dev, seed)
+├─ INSTALLATION.md          # Installations- und Setup-Anleitung
+└─ README.md                # Projektbeschreibung, Hinweise, Updates
 ```
 ## 10. Fehlerbehebung
 
