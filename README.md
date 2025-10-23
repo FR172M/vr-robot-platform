@@ -115,39 +115,11 @@ Die **VR Robot Platform** ist ein TypeScript/Node + React (Vite) + PostgreSQL Pr
 
 ### Lokales Deployment
 
-Das Projekt ist vollständig lokal lauffähig. Stelle sicher, dass Docker, Node.js, PostgreSQL und npm installiert sind. Starte beide Server via:
+Das Projekt ist vollständig lokal lauffähig. Stelle sicher, dass Docker, Node.js, PostgreSQL und npm installiert sind.
 
-```bash
-npm run dev
-```
+Alle Schritte sind in der [Installationsanleitung](INSTALLATION.md) ausführlich beschrieben.
 
-Das Frontend ist unter `http://localhost:5173` erreichbar, das Backend unter `http://localhost:3000`.
-
-### Produktions-Deployment (Vorschlag)
-
-1. **Frontend builden**:
-
-   ```bash
-   cd frontend
-   npm run build
-   ```
-
-   Das erzeugt ein statisches Build unter `frontend/dist/`.
-
-2. **Static Serve im Backend aktivieren**:
-
-  * Entweder `express.static` in `server.ts` für `/dist` hinzufügen oder über einen Reverse Proxy (NGINX) routen.
-
-3. **Backend deployen**:
-
-  * Beispiel: Dockerfile + docker-compose (Postgres, Backend, evtl. NGINX).
-  * Env-Dateien korrekt setzen (`DB_HOST`, `DB_USER`, `DB_PASSWORD`, `DB_NAME`, `PORT`).
-
-4. **Unity Simulationen bereitstellen**:
-
-  * Work und Solution als ZIP hochladen über Teacher-UI oder direkt über `/upload-*` Endpunkte.
-
----
+Das Frontend ist im Anschluss unter `http://localhost:5173` erreichbar, das Backend unter `http://localhost:3000`.
 
 ## Bekannte Einschränkungen / Nächste Schritte
 

@@ -9,7 +9,6 @@ Zusätzlich kann **Docker** für isolierte Python-Codeausführung genutzt werden
 ## 📋 Voraussetzungen
 
 Bitte installiere folgende Tools vorab:
-
 | Tool | Empfohlene Version | Zweck |
 |------|--------------------|--------|
 | [Node.js](https://nodejs.org/) | ≥ 16 | Laufzeitumgebung für Frontend & Backend |
