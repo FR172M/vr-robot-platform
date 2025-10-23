@@ -20,23 +20,33 @@ Die **VR Robot Platform** ist ein TypeScript/Node + React (Vite) + PostgreSQL Pr
 
 ---
 
-## Projektstruktur (relevante Pfade)
+## Projektstruktur
 
+```bash
+/vr-robot-platform          # Repository Root
+├─ backend/                 # Express + TypeScript Backend
+│ ├─ src/
+│ │ ├─ controllers/         # Express Controller (Tasks, Upload, Code)
+│ │ ├─ routes/              # API-Endpunkte (taskRoutes.ts, codeRoutes.ts)
+│ │ ├─ db/                  # PostgreSQL-Verbindung und Helper
+│ │ ├─ utils/               # Helfer (DockerRunner, SimulationManager, tmpSimulationManager)
+│ │ ├─ public/uploads/      # Hochgeladene Dateien / Simulationen
+│ │ └─ seed/                # seedTasks.ts + Beispiel-Simulationen
+│ ├─ .env                   # lokal zu erstellen! Umgebungsvariablen (DB-Zugang etc.)
+│ ├─ package.json           # Backend-spezifische Abhängigkeiten & Scripts
+│ └─ tsconfig.json          # TypeScript-Konfiguration
+│
+├─ frontend/                # React + Vite Frontend
+│ ├─ src/                   # Komponenten, Pages, Store, Utils
+│ ├─ public/                # Statische Assets
+│ ├─ vite.config.ts         # Vite-Konfiguration
+│ └─ package.json           # Frontend-Abhängigkeiten & Scripts
+│
+├─ package.json             # Root-Skripte (concurrently: dev, seed)
+├─ INSTALLATION.md          # Installations- und Setup-Anleitung
+└─ README.md                # Projektbeschreibung, Hinweise, Updates
 ```
-/ (repo root)
-├─ frontend/                # React + Vite app (src, components, pages)
-├─ backend/                 # Express (TypeScript)
-│  ├─ src/
-│  │  ├─ controllers/       # taskController, uploadController, codeController
-│  │  ├─ routes/            # taskRoutes.ts, codeRoutes.ts
-│  │  ├─ utils/             # simulationManager, tmpSimulationManager, dockerRunner
-│  │  ├─ seed/              # seedTasks.ts + example simulation template
-│  │  ├─ public/uploads/    # gespeicherte Uploads (work/solution/worksheet)
-│  │  └─ db/                # DB connection helper
-│  └─ package.json
-├─ package.json             # root: concurrently scripts (dev, seed)
-└─ README.md                # (this file: updated)
-```
+
 
 ---
 
@@ -140,7 +150,11 @@ Das Frontend ist im Anschluss unter `http://localhost:5173` erreichbar, das Back
 
 ## Lizenz
 
-Dieses Projekt ist für Forschungs- und Lehrzwecke vorgesehen. Lizenzinformationen können im ursprünglichen Repository ergänzt werden (z. B. MIT oder CC BY-NC-SA, je nach Verwendung).
+Dieses Projekt ist im Rahmen meiner Diplomarbeit entstanden und ist für Forschungs- und Lehrzwecke vorgesehen. Lizenzinformationen werden in Zukunft ergänzt. 
+
+#### Titel der Diplomarbeit:
+
+**Aufbau einer Infrastruktur am SML für hybride Lehre im Bereich der Roboterprogrammierung**
 
 ---
 
