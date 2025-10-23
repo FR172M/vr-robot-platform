@@ -107,7 +107,7 @@ In separaten Terminals:
 cd backend
 npm run dev
 ```
-####Frontend:
+#### Frontend:
 ```bash
 cd frontend
 npm run dev
@@ -117,7 +117,7 @@ npm run dev
 
 ## 7. Überprüfung
 - Öffne http://localhost:5173 im Browser
-- Navigiere durch Eingabe der Passwörter "teacher" oder "student" und Klicken des jeweiligen Buttons zu einer beiden Ansichten
+- Navigiere durch Eingabe der Passwörter "teacher" oder "student" und Klicken des jeweiligen Buttons zu einer der beiden Ansichten
 - Prüfe, ob Aufgaben aus der Datenbank angezeigt werden
 - Öffne das Browser-Dev-Tool (Console/Network)
 - Wenn GET /api/tasks erfolgreich ist, funktioniert das Backend
