@@ -9,6 +9,10 @@ backend/node_modules
 backend/src/public/uploads
 backend/src/test.ts
 backend/src/utils/testTmpSimulationManager.ts
+backend/src/seed/example_worksheet.pdf
+backend/src/seed/example_simulation.zip
+
+
 backend/.env
 backend/.gitignore
 backend/ReadMe.md
