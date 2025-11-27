@@ -2,8 +2,8 @@
 
 *Dieses README wurde nach Analyse des Projekts durch KI automatisch erstellt. Es beschreibt die aktuell implementierten Features, die Architektur, die wichtigsten Endpunkte, Entwicklungs- und Deployment-Hinweise sowie Troubleshooting.*
 
-- [Installationsanleitung Lokal](INSTALLATION.md)
-- [Installationsanleitung_DockerImages](DOCKERDEMO.md)
+- [Installationsanleitung (Lokal)](INSTALLATION.md)
+- [Installationsanleitung (DockerImages)](DOCKERDEMO.md)
 - [Link zum PRD](PRD.md)
 
 ---
