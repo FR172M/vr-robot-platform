@@ -17,7 +17,6 @@ import {
 } from '@mui/icons-material';
 
 import React, {useEffect, useMemo, useState} from 'react';
-import {getTasks} from '../services/taskService';
 import {Task} from '../types/Task';
 import {useNavigate} from 'react-router-dom';
 import dayjs from 'dayjs';
@@ -26,8 +25,9 @@ import isSameOrAfter from 'dayjs/plugin/isSameOrAfter';
 import localizedFormat from 'dayjs/plugin/localizedFormat';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import TaskCard from '../components/TaskCard';
-import {useColorMode} from "../ThemeContext";
+import {useColorMode} from "../ThemeContext2";
 import {useTheme} from '@mui/material/styles';
+import {fetchTasksAPI} from "../api/axiosInstance";
 
 dayjs.extend(isSameOrBefore);
 dayjs.extend(isSameOrAfter);
@@ -50,7 +50,7 @@ const StudentPage = () => {
     const now = dayjs();
 
     const fetchTasks = async () => {
-        const data = await getTasks();
+        const data = await fetchTasksAPI();
         const normalized = data.map((task) => ({
             ...task,
         }));

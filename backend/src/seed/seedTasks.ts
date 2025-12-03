@@ -70,6 +70,13 @@ const seedTasks = async (): Promise<void> => {
         `);
         console.log('🧱 Table "tasks" ensured');
 
+        await query(`DO $$
+BEGIN
+   IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'task_solutions') THEN
+       DELETE FROM task_solutions;
+   END IF;
+END $$;
+`);
         await query('DELETE FROM tasks');
         console.log('🗑️  All tasks deleted');
 
@@ -110,10 +117,10 @@ const seedTasks = async (): Promise<void> => {
         const tasks = [
 
             {
-                title: 'Global Python Example',
+                title: 'Circular Movement Example (global)',
                 startDate: today,
                 dueDate: inOneMonth,
-                difficulty: 'Hard',
+                difficulty: 'Easy',
                 description: `Make the robot move in a circle and stand still if it reaches its initial location.`,
                 sampleSolution: `# Ausgangsposition simulieren
 x, y = 0.0, 0.0   # Startpunkt
@@ -159,11 +166,459 @@ while True:
 `
             },
 
+            {
+                title: '3D Grid Snake Scan with Exact Return (global)',
+                startDate: twoDaysAgo,
+                dueDate: today,
+                difficulty: 'Hard',
+                description: `Program the robot to fly a complete N×N×N scan pattern in 3D using only forward/backward/left/right/up/down + turn/pitch/roll. The robot must traverse every grid layer in a snake-like pattern, climb to the next layer, repeat the scan, and after finishing all layers it must automatically return to its exact starting position and orientation — without using imports or external math. The return must be achieved by inverting every executed command.`,
+                sampleSolution: `
+# Der Roboter soll ein N×N×N-Scanmuster abfliegen und anschließend exakt zurückkehren.
+# Es dürfen nur forward/backward/left/right/up/down/turn/pitch/roll genutzt werden.
+
+N = 5        # Anzahl der Punkte pro Achse
+step = 1.0   # Schrittweite
+
+executed = []   # Log aller ausgeführten Kommandos (für spätere Umkehr)
+
+def do(cmd, val):
+    # API-Aufrufe
+    if cmd == 'forward':
+        forward(val)
+    elif cmd == 'backward':
+        backward(val)
+    elif cmd == 'left':
+        left(val)
+    elif cmd == 'right':
+        right(val)
+    elif cmd == 'up':
+        up(val)
+    elif cmd == 'down':
+        down(val)
+    elif cmd == 'turn':
+        turn(val)
+    elif cmd == 'pitch':
+        pitch(val)
+    elif cmd == 'roll':
+        roll(val)
+    else:
+        return
+    executed.append((cmd, val))
+
+span = (N - 1) * step
+
+# Mehrschichtiger 3D-Schlangenscan
+for z in range(N):
+    for y in range(N):
+        if span > 0:
+            if (y % 2) == 0:
+                do('forward', span)
+            else:
+                do('backward', span)
+
+        if y != N - 1:
+            do('right', step)
+
+    # Ebene zurück auf (0,0)
+    if (N % 2) == 1:
+        if span > 0:
+            do('backward', span)
+        if (N - 1) * step > 0:
+            do('left', (N - 1) * step)
+    else:
+        if (N - 1) * step > 0:
+            do('left', (N - 1) * step)
+
+    if z != N - 1:
+        do('up', step)
+
+# --- Exaktes Zurückfahren: jedes Kommando wird invertiert ---
+for cmd, val in reversed(executed):
+    if cmd == 'forward':
+        backward(val)
+    elif cmd == 'backward':
+        forward(val)
+    elif cmd == 'left':
+        right(val)
+    elif cmd == 'right':
+        left(val)
+    elif cmd == 'up':
+        down(val)
+    elif cmd == 'down':
+        up(val)
+    elif cmd == 'turn':
+        turn(-val)
+    elif cmd == 'pitch':
+        pitch(-val)
+    elif cmd == 'roll':
+        roll(-val)
+    # Ergebnis: Roboter steht wieder exakt am Startpunkt in Originalorientierung.
+`,
+                pseudocode: `
+Record every executed movement.
+Scan each layer in a snake pattern:
+    for z in layers:
+        for y in rows:
+            move forward or backward across the row
+            shift into next row
+        normalize x,y position
+        move up to next layer
+After finishing:
+    iterate executed commands in reverse
+    apply perfect inverse movement to return to start
+    also invert rotations for original orientation
+`
+            },
+
+            {
+                title: 'Multi-Pattern 3D Hybrid Scan (global)',
+                startDate: sevenDaysAgo,
+                dueDate: tomorrow,
+                difficulty: 'Hard',
+                description: `Combine multiple complex movement patterns into one mission. The robot must:
+1) Perform a descending horizontal spiral around a shrinking square.
+2) After reaching the center, immediately switch into a 3D cubic perimeter scan.
+3) Then perform an inner cubic sweep (a smaller cube inside).
+4) Finally the robot must return exactly to its starting position by inverting the entire movement history — using only forward/backward/left/right/up/down/turn/pitch/roll, no imports.`,
+                sampleSolution: `
+# Ziel:
+# 1) Spiralförmiges Absinken in einer Ebene.
+# 2) 3D-Würfelscan außen.
+# 3) 3D-Würfelscan innen.
+# 4) Vollständige Rückkehr durch Invertierung aller Kommandos.
+#
+# Nur API-Befehle erlaubt, keine Importe.
+
+executed = []
+
+def do(cmd, val):
+    if cmd == 'forward':
+        forward(val)
+    elif cmd == 'backward':
+        backward(val)
+    elif cmd == 'left':
+        left(val)
+    elif cmd == 'right':
+        right(val)
+    elif cmd == 'up':
+        up(val)
+    elif cmd == 'down':
+        down(val)
+    elif cmd == 'turn':
+        turn(val)
+    elif cmd == 'pitch':
+        pitch(val)
+    elif cmd == 'roll':
+        roll(val)
+    executed.append((cmd, val))
+
+# -------------------------------
+# 1) Absteigende Spirale
+# -------------------------------
+# Wir verwenden ein quadratisches Spiralpattern: rechts → unten → links → oben
+# danach werden die Segmente kürzer, gleichzeitig geht der Roboter pro Runde leicht nach unten.
+
+outer = 8.0   # Startkantenlänge
+step = 1.0
+depth_per_round = 0.5
+
+length = outer
+while length > 0:
+    # rechts
+    do('right', length)
+    # unten (Abstieg)
+    do('down', depth_per_round)
+    # zurück
+    do('left', length)
+    # unten
+    do('down', depth_per_round)
+    # verringern
+    length -= step
+
+# Am Ende steht der Roboter in der Mitte unterhalb seines Startpunkts.
+
+# -------------------------------
+# 2) Äußerer Würfelscan
+# -------------------------------
+
+edge = 6.0  # Würfelgröße
+# Wir fliegen den Würfelumfang Ebene für Ebene
+
+levels = 4
+level_step = edge / levels
+
+for i in range(levels + 1):
+    # umrunde die Ebene (ein Quadrat)
+    do('forward', edge)
+    do('right', edge)
+    do('backward', edge)
+    do('left', edge)
+
+    if i < levels:
+        do('up', level_step)
+
+# -------------------------------
+# 3) Innerer Würfelscan
+# -------------------------------
+
+inner = 3.0
+levels2 = 3
+level2_step = inner / levels2
+
+# verschieben ins Innere
+do('forward', 1.5)
+do('right', 1.5)
+
+for i in range(levels2 + 1):
+    do('forward', inner)
+    do('right', inner)
+    do('backward', inner)
+    do('left', inner)
+    if i < levels2:
+        do('up', level2_step)
+
+# -------------------------------
+# 4) Exakte Rückkehr durch Inversion
+# -------------------------------
+
+for cmd, val in reversed(executed):
+    if cmd == 'forward':
+        backward(val)
+    elif cmd == 'backward':
+        forward(val)
+    elif cmd == 'left':
+        right(val)
+    elif cmd == 'right':
+        left(val)
+    elif cmd == 'up':
+        down(val)
+    elif cmd == 'down':
+        up(val)
+    elif cmd == 'turn':
+        turn(-val)
+    elif cmd == 'pitch':
+        pitch(-val)
+    elif cmd == 'roll':
+        roll(-val)
+
+# Ende: Der Roboter erreicht exakt Startposition und Startorientierung.
+`,
+                pseudocode: `
+record all actions
+
+# descending spiral
+while length > 0:
+    move right length
+    move down
+    move left length
+    move down
+    shrink length
+
+# outer cube perimeter
+repeat:
+    draw square
+    move up
+
+# inner cube
+enter inside
+draw smaller square layers
+
+# return
+reverse the action list and apply inverses
+`
+            },
+
+            {
+                title: 'Square Sweep with Rotational Orientation Cycle (global)',
+                startDate: threeDaysAgo,
+                dueDate: inSevenDays,
+                difficulty: 'Medium',
+                description: `Make the robot perform a square-shaped patrol (a simple 4-sided loop), but after each lap it must rotate its orientation by 90 degrees using turn(), pitch(), or roll() in any pattern you choose. After completing four laps — each with a different orientation — the robot must return exactly to its starting position by reversing all movements it executed. No imports allowed.`,
+                sampleSolution: `
+# Aufgabe:
+# 1) Roboter fliegt ein Quadrat (forward, right, backward, left).
+# 2) Nach jeder Runde führt er eine ORIENTIERUNGSDREHUNG aus (z. B. turn(90)).
+# 3) Nach 4 Runden werden alle Befehle invertiert, um exakt zurückzukehren.
+# Nur API-Befehle erlaubt.
+
+executed = []
+
+def do(cmd, val):
+    if cmd == 'forward':
+        forward(val)
+    elif cmd == 'backward':
+        backward(val)
+    elif cmd == 'left':
+        left(val)
+    elif cmd == 'right':
+        right(val)
+    elif cmd == 'up':
+        up(val)
+    elif cmd == 'down':
+        down(val)
+    elif cmd == 'turn':
+        turn(val)
+    elif cmd == 'pitch':
+        pitch(val)
+    elif cmd == 'roll':
+        roll(val)
+    executed.append((cmd, val))
+
+# Quadratgröße
+edge = 3.0
+
+# Vier Runden mit jeweils anderer Orientierung
+for lap in range(4):
+    # Quadratpatrouille
+    do('forward', edge)
+    do('right', edge)
+    do('backward', edge)
+    do('left', edge)
+
+    # Orientierung ändern
+    # Simple Variante: immer 90° drehen
+    do('turn', 90)
+
+# Rückkehr: alle Kommandos invertieren
+for cmd, val in reversed(executed):
+    if cmd == 'forward':
+        backward(val)
+    elif cmd == 'backward':
+        forward(val)
+    elif cmd == 'left':
+        right(val)
+    elif cmd == 'right':
+        left(val)
+    elif cmd == 'up':
+        down(val)
+    elif cmd == 'down':
+        up(val)
+    elif cmd == 'turn':
+        turn(-val)
+    elif cmd == 'pitch':
+        pitch(-val)
+    elif cmd == 'roll':
+        roll(-val)
+
+# Der Roboter steht wieder exakt an Startposition und -orientierung.
+`,
+                pseudocode: `
+loop 4 times:
+    fly a square (forward, right, backward, left)
+    rotate orientation by 90 degrees
+after finishing:
+    reverse all executed commands and apply inverse movement
+`
+            },
+
+            {
+                title: 'Full-API Motion Calibration Routine (global)',
+                startDate: today,
+                dueDate: inOneMonthPlusSeven,
+                difficulty: 'Medium',
+                description: `Create a calibration sequence that uses EVERY available API command at least once. The robot must:
+• Move in all six linear directions.
+• Perform all three rotations.
+• Execute these motions in a structured, repeatable pattern.
+• Finally return to its starting point by inverting all executed movements.
+No imports allowed.`,
+                sampleSolution: `
+# Ziel:
+# - Jede Bewegungsfunktion wird mindestens einmal verwendet.
+# - Jede Rotationsfunktion ebenfalls.
+# - Bewegungen werden geloggt und später invertiert.
+# Keine Importe erlaubt.
+
+executed = []
+
+def do(cmd, val):
+    if cmd == 'forward':
+        forward(val)
+    elif cmd == 'backward':
+        backward(val)
+    elif cmd == 'left':
+        left(val)
+    elif cmd == 'right':
+        right(val)
+    elif cmd == 'up':
+        up(val)
+    elif cmd == 'down':
+        down(val)
+    elif cmd == 'turn':
+        turn(val)
+    elif cmd == 'pitch':
+        pitch(val)
+    elif cmd == 'roll':
+        roll(val)
+    executed.append((cmd, val))
+
+# -------------------------
+# Bewegungsmuster
+# -------------------------
+
+step = 2.0
+rot = 30
+
+# Lineare Bewegungen in alle Richtungen
+do('forward', step)
+do('right', step)
+do('up', step)
+do('backward', step)
+do('left', step)
+do('down', step)
+
+# Rotationen in alle Achsen
+do('turn', rot)   # drehen um eigene Achse
+do('pitch', rot)  # nach vorn/hinten kippen
+do('roll', rot)   # zur Seite kippen
+
+# Eine zweite Rotationsrunde, damit es ein echtes Pattern wird
+do('turn', -rot)
+do('pitch', -rot)
+do('roll', -rot)
+
+# -------------------------
+# Rückkehr zum Start
+# -------------------------
+
+for cmd, val in reversed(executed):
+    if cmd == 'forward':
+        backward(val)
+    elif cmd == 'backward':
+        forward(val)
+    elif cmd == 'left':
+        right(val)
+    elif cmd == 'right':
+        left(val)
+    elif cmd == 'up':
+        down(val)
+    elif cmd == 'down':
+        up(val)
+    elif cmd == 'turn':
+        turn(-val)
+    elif cmd == 'pitch':
+        pitch(-val)
+    elif cmd == 'roll':
+        roll(-val)
+
+# Ergebnis:
+# Der Roboter hat jede API-Funktion genutzt, ein vollständiges Muster durchlaufen
+# und ist exakt zum Start zurückgekehrt.
+`,
+                pseudocode: `
+record actions
+move in all six directions
+apply all three rotations (positive and negative)
+reverse action list and apply inverse commands to return to start
+`
+            },
+
+
 
             {
                 title: 'C# (Unity) 1/5 - Simple LED Blink',
-                startDate: today,
-                dueDate: tomorrow,
+                startDate: tomorrow,
+                dueDate: inThreeDays,
                 difficulty: 'Easy',
                 description: `Your robot has a status LED that needs to blink to indicate readiness. Use Unity C# to implement a blinking pattern that repeats a few times.`,
                 sampleSolution: `// C# (Unity)
@@ -197,8 +652,8 @@ repeat N times:
             },
             {
                 title: 'C# (Unity) 2/5 - Move Forward Sequence',
-                startDate: tomorrow,
-                dueDate: inTwoDays,
+                startDate: inTwoDays,
+                dueDate: inFourDays,
                 difficulty: 'Easy',
                 description: `Now your robot needs to move forward a certain distance. Implement a smooth motion in Unity C# using a coroutine to reach the target.`,
                 sampleSolution: `// C# (Unity)
@@ -231,8 +686,8 @@ reportArrival();`
             },
             {
                 title: 'C# (Unity) 3/5 - Pick Object',
-                startDate: inTwoDays,
-                dueDate: inThreeDays,
+                startDate: inThreeDays,
+                dueDate: inEightDays,
                 difficulty: 'Medium',
                 description: `Extend your robot to pick up an object. Implement gripper movement and grabbing logic. Use coroutines in Unity C# for smooth transitions.`,
                 sampleSolution: `// C# (Unity)
@@ -271,8 +726,8 @@ closeGripper();`
             },
             {
                 title: 'C# (Unity) 4/5 - Place Object',
-                startDate: inThreeDays,
-                dueDate: inFourDays,
+                startDate: inSevenDays,
+                dueDate: inTwentyDays,
                 difficulty: 'Medium',
                 description: `After picking an object, your robot should place it at a designated location. Implement smooth movement and gripper release.`,
                 sampleSolution: `// C# (Unity)
@@ -310,8 +765,8 @@ openGripper();`
             },
             {
                 title: 'C# (Unity) 5/5 - Full Pick and Place Routine',
-                startDate: inFourDays,
-                dueDate: inFiveDays,
+                startDate: inOneMonth,
+                dueDate: inOneMonthPlusTen,
                 difficulty: 'Hard',
                 description: `Combine previous skills to implement a full pick and place sequence: move, pick, move, and place. Use coroutines for smooth motion. Unity C#`,
                 sampleSolution: `// C# (Unity)
@@ -464,8 +919,8 @@ for i in range(10):
             },
             {
                 title: 'Python (ROS2) 4/5 - Simple Obstacle Avoidance',
-                startDate: yesterday,
-                dueDate: today,
+                startDate: fiveDaysAgo,
+                dueDate: threeDaysAgo,
                 difficulty: 'Medium',
                 description: `Your robot must navigate a small maze using front sensors to detect obstacles. Program it to stop or turn to avoid collisions. Language: Python with ROS2.`,
                 sampleSolution: `# Python (ROS2)
@@ -503,8 +958,8 @@ while navigating:
             },
             {
                 title: 'Python (ROS2) 5/5 - Pick and Place Routine',
-                startDate: yesterday,
-                dueDate: inTwoDays,
+                startDate: twoDaysAgo,
+                dueDate: yesterday,
                 difficulty: 'Medium',
                 description: `Program the robot to pick up an object and place it on a designated spot. Use vision or sensors to locate the object accurately. Language: Python with ROS2.`,
                 sampleSolution: `# Python (ROS2)
@@ -561,7 +1016,7 @@ releaseObject();`
             let simWorkDbPath: string;
             let simSolutionDbPath: string;
 
-            if (task.title === 'Global Python Example') {
+            if (task.title.includes('(global)')) {
                 // globale Simulation verwenden, kein Copy nötig
                 simWorkDbPath = '/assets/globalSim.zip';
                 simSolutionDbPath = '/assets/globalSim.zip';

@@ -2,8 +2,8 @@
 
 import fs from 'fs';
 import path from 'path';
+import {TMP_BASE} from "./dockerRunner";
 
-const TMP_BASE = path.join(__dirname, '../../tmp/simulations');
 const CLEANUP_DELAY = 3 * 60 * 1000; // 3 Minuten
 const cleanupTimers: Record<string, NodeJS.Timeout> = {};
 

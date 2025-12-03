@@ -23,15 +23,22 @@ import {
 } from '../controllers/uploadController';
 import {deleteSimulationFolder, scheduleCleanup} from '../utils/tmpSimulationManager';
 
+import { authenticateJWT, authorizeRoles } from '../auth/auth';
+
+
 
 const router = express.Router();
 
+router.use(authenticateJWT);
+
+
 // ----------------- CRUD -----------------
-router.get('/tasks', getTasks);
-router.post('/tasks', postTask);
-router.get('/tasks/:id', getTaskById);
-router.put('/tasks/:id', updateTask);
-router.delete('/tasks/:id', deleteTask);
+router.get('/', getTasks);
+router.get('/:id', getTaskById);
+
+router.post('/', authorizeRoles('teacher'), postTask);
+router.put('/:id', authorizeRoles('teacher'), updateTask);
+router.delete('/:id', authorizeRoles('teacher'), deleteTask);
 
 // ----------------- Multer Setup -----------------
 const storage = multer.diskStorage({
@@ -65,17 +72,16 @@ const upload = multer({ storage });
 
 
 // ----------------- Upload Routes -----------------
-router.post('/tasks/:id/upload-work-simulation', upload.single('simulation'), uploadWorkSimulation);
-router.post('/tasks/:id/upload-solution-simulation', upload.single('simulation'), uploadSolutionSimulation);
-router.post('/tasks/:id/upload-worksheet', upload.single('pdf'), uploadPdf);
+router.post('/:id/upload-work-simulation', authorizeRoles('teacher'), upload.single('simulation'), uploadWorkSimulation);
+router.post('/:id/upload-solution-simulation', authorizeRoles('teacher'), upload.single('simulation'), uploadSolutionSimulation);
+router.post('/:id/upload-worksheet', authorizeRoles('teacher'), upload.single('pdf'), uploadPdf);
 
 // ----------------- Download Routes -----------------
-router.get('/tasks/:id/download-work-simulation', downloadWorkSimulation);
-router.get('/tasks/:id/download-solution-simulation', downloadSolutionSimulation);
-router.get('/tasks/:id/download-worksheet', downloadPdf);
+router.get('/:id/download-work-simulation', downloadWorkSimulation);
+router.get('/:id/download-solution-simulation', downloadSolutionSimulation);
+router.get('/:id/download-worksheet', downloadPdf);
 
 // ----------------- View Simulation -----------------
-
 router.get('/:id/view-simulation/:variant', async (req, res) => {
     const { id: taskId, variant } = req.params;
 

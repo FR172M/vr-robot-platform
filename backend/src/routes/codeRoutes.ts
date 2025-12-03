@@ -1,10 +1,9 @@
-import { Router } from "express";
-import {listApi, runCode} from "../controllers/codeController";
+import express from "express";
+import { listApi, runCode } from "../controllers/codeController";
 
-const router = Router();
+const router = express.Router();
 
-router.post("/run-python", runCode);
-router.get("/list-api/:taskId/:variant", listApi);
-
+router.get("/list-api/:taskId/:variant", listApi);      // Funktion wird übergeben
+router.post("/run-python", runCode);                    // Funktion wird übergeben
 
 export default router;

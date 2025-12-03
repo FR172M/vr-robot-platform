@@ -1,4 +1,4 @@
-# Installation Guide – VR Robot Platform
+# Installations Guide (lokaler Dev Modus)
 
 Dieses Dokument erklärt Schritt für Schritt, wie du die **VR Robot Platform** lokal installierst, konfigurierst und startest.  
 Die Plattform besteht aus einem **React-Frontend**, einem **Express-Backend** und einer **PostgreSQL-Datenbank**.  

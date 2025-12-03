@@ -4,6 +4,8 @@
 .gitignore
 node_modules
 vr-simulation
+docker-compose.yml
+sandboxRun
 
 backend/node_modules
 backend/src/public/uploads
@@ -22,3 +24,4 @@ frontend/.gitignore
 frontend/favicon_C.png
 frontend/src/test.ts
 frontend/ReadMe.md
+frontend/src/pages/StudentPage.tsx

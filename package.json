@@ -1,19 +1,29 @@
 {
   "dependencies": {
+    "bcrypt": "^6.0.0",
+    "jsonwebtoken": "^9.0.2",
+    "jwt-decode": "^4.0.0",
     "multer": "^2.0.2",
+    "pg": "^8.16.3",
     "uuid": "^11.1.0"
   },
   "name": "vr-robot-platform",
   "version": "1.0.0",
   "main": "index.js",
   "devDependencies": {
+    "@types/bcrypt": "^6.0.0",
+    "@types/jsonwebtoken": "^9.0.10",
+    "@types/uuid": "^10.0.0",
     "concurrently": "^9.2.0"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
+    "sandbox" : "docker compose up -d sandbox",
     "dev": "concurrently \"npm --prefix backend run dev\" \"npm --prefix frontend run dev\"",
-
-    "seed": "cd backend && npx ts-node src/seed/seedTasks.ts",
+    "seed": "cd backend && npx ts-node src/seed/seedTasks.ts && npx ts-node src/seed/seedUsers.ts && npx ts-node src/seed/seedSolutions.ts",
+    "seedTasks": "cd backend && npx ts-node src/seed/seedTasks.ts && npx ts-node src/seed/seedSolutions.ts",
+    "seedUsers": "cd backend && npx ts-node src/seed/seedUsers.ts && npx ts-node src/seed/seedSolutions.ts",
+    "build": "vite build",
     "tmpTest": "cd backend && npx ts-node src/utils/testTmpSimulationManager.ts"
   },
   "keywords": [],

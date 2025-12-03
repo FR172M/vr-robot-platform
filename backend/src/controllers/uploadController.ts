@@ -82,8 +82,9 @@ export const uploadPdf = async (req: Request, res: Response) => {
 
 // --- Download Helper ---
 const handleDownload = (res: Response, relativePath: string | null, label: string) => {
-    if (!relativePath) return res.status(404).send(`${label} not found`);
-
+    if (!relativePath) {
+        return res.status(404).send(`${label} not found`);
+    }
     const fullPath = path.join(__dirname, '../public', relativePath);
 
     if (!fs.existsSync(fullPath)) {
@@ -91,7 +92,13 @@ const handleDownload = (res: Response, relativePath: string | null, label: strin
     }
 
     const filename = path.basename(fullPath);
-    res.download(fullPath, filename);
+
+    res.download(fullPath, filename, (err) => {
+        if (err) {
+            console.error(`❌ Error sending ${filename}:`, err);
+        } else {
+        }
+    });
 };
 
 // --- Downloads ---

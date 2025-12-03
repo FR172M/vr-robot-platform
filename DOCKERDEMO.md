@@ -78,6 +78,52 @@ und dem Pull sowie Start der Container (Skript run.sh):
 •	DB und Sandbox nutzen interne Volumes, um Daten zwischen Neustarts zu behalten
 
 ---
+## Seeds
+
+Es werden standardmäßig beim Start der Images seeding Skripte ausgeführt.
+Hierbei werden die Tabellen "tasks", "users" sowie "task_solutions" der Datenbank angelegt und mit Daten gefüllt, sodass die Funktionalitäten der Anwendung erforscht werden können.
+
+### User
+Die Mailadressen der geseedeten User werden zu Beginn geloggt - die Passwörter sind für alle entweder **"Testing1Teacher"** oder **"Testing1Student"** - je nach Rolle des Users.
+
+#### Beispiele:
+```
+Mail:       teacher@tu-dresden.de
+Passwort:   Testing1Teacher
+```
+```
+Mail:       student@tu-dresden.de
+Passwort:   Testing1Student
+```
+
+Man kann sich natürlich auch neu registrieren. Man bekommt hierbei standardmäßig die Rolle "student".
+Die Mailadressen müssen folgendes Format haben (TU Dresden Standard):
+```
+vorname.nachname[n]@mailbox.tu-dresden.de
+vorname.nachname[n]@tu-dresden.de
+
+• [n] = fortlaufende Nummern (ohne die Klammern) zur Unterscheidung bei Namensgleichheit
+• Leerzeichen im Namen werden durch Unterstrich abgebildet
+```
+
+Das Passwort benötigt mindestens:
+```
+• einen Kleinbuchstaben
+• einen Großbuchstaben
+• eine Ziffer oder Sonderzeichen
+```
+
+### Tasks und Solutions
+Es werden insgesamt 15 Tasks geseedet - je 5 previous, current und upcoming.
+Dabei verwenden die current tasks die globale Simulation.
+
+Am Ende des seeds wir auch task_solutions gefüllt - dies erfolgt zufällig und ändert sich somit bei jedem Start der Images.
+Dadurch entsteht ein etwas realistisches Bild, dass ein User eine Aufgabe (nicht) angefangen oder abgegeben hat und man sieht die Benotungen und Feedback.
+Somit sieht man den Status der Aufgaben für die einzelnen Studenten. 
+Als Teacher kann man zudem in dem Bereich "start grading" eine Übersicht pro Task aufrufen.
+
+---
+
 ## Logs & Kontrolle
 
 #### Logs eines Services anzeigen

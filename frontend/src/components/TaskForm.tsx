@@ -20,8 +20,6 @@ import {
 import {DatePicker} from '@mui/x-date-pickers';
 import dayjs from 'dayjs';
 import {Task} from '../types/Task';
-import {saveTask, updateTask} from '../services/taskService';
-import axios from 'axios';
 import {v4 as uuidv4} from 'uuid';
 import UploadFileButton from "./UploadFileButton";
 import {
@@ -30,6 +28,13 @@ import {
     CheckBoxOutlineBlank,
 } from "@mui/icons-material";
 import {useTheme} from "@mui/material/styles";
+import {
+    clearTmpAPI,
+    createTaskAPI,
+    updateTaskAPI,
+    uploadSolutionSimulationAPI, uploadWorksheetAPI,
+    uploadWorkSimulationAPI
+} from "../api/axiosInstance";
 
 
 interface TaskFormProps {
@@ -103,8 +108,8 @@ const TaskForm: React.FC<TaskFormProps> = ({
                         return !!worksheetFile;
                     }
                     return !!workSimulationFile && !!solutionSimulationFile && !!worksheetFile;
-                } else if (mode === "edit"){
-                    if ((task.simWorkPath === "/assets/globalSim.zip" && task.simSolutionPath === "/assets/globalSim.zip") &&(!useGlobalSimulation) && (!changeSolutionSim && !changeWorkSim)){
+                } else if (mode === "edit") {
+                    if ((task.simWorkPath === "/assets/globalSim.zip" && task.simSolutionPath === "/assets/globalSim.zip") && (!useGlobalSimulation) && (!changeSolutionSim && !changeWorkSim)) {
                         return false;
                     }
                 }
@@ -130,6 +135,7 @@ const TaskForm: React.FC<TaskFormProps> = ({
         setActiveStep((prev) => prev - 1);
     };
 
+
     const handleSave = async () => {
         if (!task.title || !task.description || !task.pseudocode || !task.startDate || !task.dueDate) {
             onError?.('Bitte alle Pflichtfelder ausfüllen.');
@@ -147,15 +153,13 @@ const TaskForm: React.FC<TaskFormProps> = ({
             let taskId = task.id;
 
             if (mode === 'edit' && task.id) {
-                try {
-                    await axios.post(`/api/tasks/${task.id}/clear-tmp`);
-                } catch (err) {
-                    console.warn('⚠️ Failed to clear TMP folders', err);
-                }
-                await updateTask(task.id, formattedTask);
+                try { await clearTmpAPI(task.id); }
+                catch (err) { console.warn('⚠️ Failed to clear TMP folders', err); }
+
+                await updateTaskAPI(task.id, formattedTask);
             } else {
-                const res = await saveTask(formattedTask);
-                taskId = res.data.id;
+                const res = await createTaskAPI(formattedTask);
+                taskId = res.id;
             }
 
             const updatePaths: Partial<Task> = {};
@@ -165,45 +169,32 @@ const TaskForm: React.FC<TaskFormProps> = ({
                 updatePaths.simSolutionPath = "/assets/globalSim.zip";
             } else {
                 if (workSimulationFile && taskId) {
-                    const formData = new FormData();
-                    formData.append('simulation', workSimulationFile);
-                    await axios.post(`/api/tasks/${taskId}/upload-work-simulation`, formData, {
-                        headers: {'Content-Type': 'multipart/form-data'},
-                    });
+                    await uploadWorkSimulationAPI(taskId, workSimulationFile);
                     updatePaths.simWorkPath = `/uploads/${taskId}/work/${workSimulationFile.name}`;
                 }
 
                 if (solutionSimulationFile && taskId) {
-                    const formData = new FormData();
-                    formData.append('simulation', solutionSimulationFile);
-                    await axios.post(`/api/tasks/${taskId}/upload-solution-simulation`, formData, {
-                        headers: {'Content-Type': 'multipart/form-data'},
-                    });
+                    await uploadSolutionSimulationAPI(taskId, solutionSimulationFile);
                     updatePaths.simSolutionPath = `/uploads/${taskId}/solution/${solutionSimulationFile.name}`;
                 }
             }
 
             if (worksheetFile && taskId) {
-                const formData = new FormData();
-                formData.append('pdf', worksheetFile);
-                await axios.post(`/api/tasks/${taskId}/upload-worksheet`, formData, {
-                    headers: {'Content-Type': 'multipart/form-data'},
-                });
+                await uploadWorksheetAPI(taskId, worksheetFile);
                 updatePaths.worksheetPath = `/uploads/${taskId}/worksheet/${worksheetFile.name}`;
             }
 
             if (Object.keys(updatePaths).length > 0) {
-                await updateTask(taskId, updatePaths);
+                await updateTaskAPI(taskId, updatePaths);
                 Object.assign(formattedTask, updatePaths);
             }
 
+            setConfirmOpen(false);
             onSuccess?.();
             onUpdated?.(formattedTask);
             onClose?.();
         } catch (err: any) {
-            const msg = axios.isAxiosError(err)
-                ? err.response?.data?.error || err.message
-                : 'Fehler beim Speichern der Aufgabe.';
+            const msg = err.response?.data?.error || err.message || 'Fehler beim Speichern der Aufgabe.';
             onError?.(msg);
         }
     };
@@ -242,10 +233,10 @@ const TaskForm: React.FC<TaskFormProps> = ({
                         alignItems: "center",
                         justifyContent: "space-between",
                         p: 1,
-                        borderBottom: open ? "1px solid" : '',
-                        borderColor: open ? "divider" : '',
-                        borderBottomLeftRadius: open ? 0 : '',
-                        borderBottomRightRadius: open ? 0 : '',
+                        borderBottom: open ? "1px solid" : undefined,
+                        borderColor: open ? "divider" : undefined,
+                        borderBottomLeftRadius: open ? 0 : undefined,
+                        borderBottomRightRadius: open ? 0 : undefined,
 
                     }}
                     onClick={() => setOpen((prev) => !prev)}
@@ -282,6 +273,7 @@ const TaskForm: React.FC<TaskFormProps> = ({
                             value={task.startDate ? dayjs(task.startDate) : null}
                             onChange={(date) => setTask({...task, startDate: date})}
                             disablePast
+                            disabled={dayjs(task.startDate).isBefore(dayjs()) && mode === 'edit'}
                         />
                         <DatePicker
                             label="Due Date"
@@ -407,10 +399,12 @@ const TaskForm: React.FC<TaskFormProps> = ({
                 </>
             )}
 
-            <Divider sx={{paddingTop: 5}} variant="middle"/>
 
             <Box p={2}>
                 <MobileStepper
+                    sx={{
+                        backgroundColor: 'inherit',
+                    }}
                     variant="dots"
                     steps={steps.length}
                     activeStep={activeStep}
@@ -449,7 +443,11 @@ const TaskForm: React.FC<TaskFormProps> = ({
                             {label: "Due Date", value: task.dueDate, original: originalTask?.dueDate},
                             {label: "Pseudocode", value: task.pseudocode, original: originalTask?.pseudocode},
                             {label: "Solution", value: task.sampleSolution, original: originalTask?.sampleSolution},
-                            {label: "Global Simulation", value: useGlobalSimulation, original: (originalTask?.simWorkPath && originalTask.simSolutionPath) === '/assets/globalSim.zip'},
+                            {
+                                label: "Global Simulation",
+                                value: useGlobalSimulation,
+                                original: (originalTask?.simWorkPath && originalTask.simSolutionPath) === '/assets/globalSim.zip'
+                            },
                             {label: "Work Simulation", value: changeWorkSim, original: false},
                             {label: "Solution Simulation", value: changeSolutionSim, original: false},
                             {label: "Worksheet", value: changeWorksheet, original: false},

@@ -102,7 +102,7 @@ Die **VR Robot Platform** ist ein TypeScript/Node + React (Vite) + PostgreSQL Pr
 
 * **Pages**
 
-  * `TeacherPage` — Tasks anlegen / bearbeiten (TaskForm), Upload von Simulation/Worksheet, Tabs für Alle / aktuell / anstehend, Delete, Edit.
+  * `UserPage` — Tasks anlegen / bearbeiten (TaskForm), Upload von Simulation/Worksheet, Tabs für Alle / aktuell / anstehend, Delete, Edit.
   * `StudentPage` — Task-Liste (read-only), Download (work/solution/pdf) und `Visibility`-Button öffnet die Simulation (Fullscreen-Dialog → `SimulationPage`).
   * `SimulationPage` — Fullscreen-Dialog/Screen mit:
 
