@@ -17,6 +17,10 @@ services:
     depends_on:
       - db
       - sandbox
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:3000/health" ]
+      interval: 5s
+      retries: 12
 
   db:
     image: fr172m/db:v0.2

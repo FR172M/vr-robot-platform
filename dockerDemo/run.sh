@@ -40,6 +40,21 @@ docker compose -f docker-compose.yml pull
 echo "Starte die Plattform..."
 docker compose -f docker-compose.yml up -d
 
+echo "Warte auf Backend-Logs..."
+docker compose -f docker-compose.yml logs -f backend &
+BACKEND_LOG_PID=$!
+
+# Backend Healthcheck abfragen
+echo "Überprüfe, ob das Backend bereit ist..."
+until [ "$(docker inspect --format='{{.State.Health.Status}}' $(docker compose ps -q backend 2>/dev/null))" = "healthy" ]; do
+    echo "Backend noch nicht bereit..."
+    sleep 2
+done
+
+
+# Logs stoppen, wenn Backend bereit ist
+kill $BACKEND_LOG_PID 2>/dev/null || true
+
 echo "Done."
 echo "Frontend: http://localhost:5173"
 echo "Backend:  http://localhost:3000"
