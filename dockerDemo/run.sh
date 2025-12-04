@@ -40,10 +40,6 @@ docker compose -f docker-compose.yml pull
 echo "Starte die Plattform..."
 docker compose -f docker-compose.yml up -d
 
-echo "Warte auf Backend-Logs..."
-docker compose -f docker-compose.yml logs -f backend &
-BACKEND_LOG_PID=$!
-
 # Backend Healthcheck abfragen
 echo "Überprüfe, ob das Backend bereit ist..."
 TIMEOUT=60  # max. 2 Minuten
