@@ -47,7 +47,7 @@ docker compose logs -f backend | while IFS= read -r line; do
     echo "$line"
     if [[ "$line" == *"Server running at"* ]]; then
         echo "Backend ist bereit!"
-        pkill -P $$ docker  # killt den docker logs Prozess, nur in der Subshell nötig
+        #pkill -P $$ docker  # killt den docker logs Prozess, nur in der Subshell nötig
         break
     fi
 done
