@@ -134,7 +134,7 @@ Als Teacher kann man zudem in dem Bereich "start grading" eine Übersicht pro Ta
 
 #### Logs eines Services anzeigen
 ```bash
-docker-compose logs -f backend
+docker-compose logs -f frontend
 ```
 (oder backend, sandbox, db für die anderen Container)
 
