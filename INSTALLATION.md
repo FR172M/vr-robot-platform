@@ -29,7 +29,7 @@ cd vr-robot-platform
 ```
 
 ## 2. Umgebungsvariablen einrichten
-Erstelle im Verzeichnis backend/ eine Datei namens .env:
+Erstelle im Verzeichnis backend/ eine Datei namens .env.local:
 ```bash
 cd backend
 touch .env.local
