@@ -1,12 +1,13 @@
 # 🤖 VR Robot Platform
 
-*Dieses README wurde nach Analyse des Projekts durch KI automatisch erstellt. Es beschreibt die aktuell implementierten Features, die Architektur, die wichtigsten Endpunkte, Entwicklungs- und Deployment-Hinweise sowie Troubleshooting.*
 
 - [Installationsanleitung (Lokal)](INSTALLATION.md)
 - [Installationsanleitung (DockerImages)](DOCKERDEMO.md)
 - [Link zum PRD](PRD.md)
 
 ---
+
+*Dieses README wurde zunächst nach Analyse des Projekts durch KI automatisch erstellt. Es beschreibt die implementierten Features, die Architektur, die wichtigsten Endpunkte, Entwicklungs- und Deployment-Hinweise sowie Troubleshooting des damaligen Standes.*
 
 Das README.md ist auf dem Stand von Oktober 2025. Es wird derzeit an den aktuellen Stand angepasst!  
 
