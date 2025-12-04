@@ -1,4 +1,4 @@
-# Docker Demo – VR Robot Platform (v0.1)
+# Docker Demo – VR Robot Platform (v0.2)
 
 Diese Demo zeigt, wie ihr die komplette **VR Robot Platform** mit allen Services (Frontend, Backend, Sandbox, Datenbank) lokal starten könnt, ohne selbst die Images bauen zu müssen. Alles ist bereits auf Docker Hub verfügbar.
 
@@ -78,6 +78,9 @@ und dem Pull sowie Start der Container (Skript run.sh):
 •	DB und Sandbox nutzen interne Volumes, um Daten zwischen Neustarts zu behalten
 
 •	es wird eine .env dynamisch erstellt durch das run.sh Skript
+
+•	nach dem Start der Container werden im Backend die Seed-Skripte ausgeführt, weshalb es zu einer kurzen Verzögerung kommen kann, bis der Login funktioniert
+
 
 
 ---
