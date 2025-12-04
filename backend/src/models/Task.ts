@@ -1,5 +1,5 @@
 // backend/src/models/Task.ts
-import { query } from '../db'; // ✅ Importiere den zentralen query-Helper
+import { query } from '../app'; // ✅ Importiere den zentralen query-Helper
 import { dbRowToTask } from '../utils/taskMapper';
 
 

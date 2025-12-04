@@ -3,15 +3,9 @@ import {Request, Response} from 'express';
 import {Pool} from 'pg';
 import {getUser} from '../auth/utils'; // Utility-Funktion für sicheren Zugriff auf req.user
 import { v4 as uuidv4 } from 'uuid';
+import {pool} from "../app";
 
 
-const pool = new Pool({
-    host: process.env.DB_HOST,
-    port: Number(process.env.DB_PORT),
-    user: process.env.DB_USER,
-    password: process.env.DB_PASSWORD,
-    database: process.env.DB_NAME,
-});
 // POST /api/solutions
 export const createOrStartSolution = async (req: Request, res: Response) => {
     try {

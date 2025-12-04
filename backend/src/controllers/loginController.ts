@@ -2,19 +2,8 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 import { Pool } from 'pg';
-import dotenv from 'dotenv';
-import cookieParser from 'cookie-parser';
 import bcrypt from "bcrypt";
-
-dotenv.config();
-
-const pool = new Pool({
-    host: process.env.DB_HOST,
-    port: Number(process.env.DB_PORT),
-    user: process.env.DB_USER,
-    password: process.env.DB_PASSWORD,
-    database: process.env.DB_NAME,
-});
+import {pool} from "../app";
 
 // Typdefinition für Request mit User
 export type AuthRequest = Request & {

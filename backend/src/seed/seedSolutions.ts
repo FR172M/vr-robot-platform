@@ -1,7 +1,5 @@
-import dotenv from 'dotenv';
-dotenv.config();
 
-import { query } from '../db';
+import { query } from '../app';
 import { v4 as uuidv4 } from 'uuid';
 
 const randomPastDate = (before: Date) =>

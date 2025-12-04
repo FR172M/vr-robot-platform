@@ -43,7 +43,7 @@ let isDocker = false;
 
 export const fetchEnvAPI = async () => {
     try {
-        const res = await axios.get('/env');
+        const res = await api.get('/env');
         isDocker = res.data.isDocker;
         console.log('Docker mode:', isDocker);
         return isDocker;

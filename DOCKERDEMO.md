@@ -23,10 +23,10 @@ Services:
 
 | Service   | Image                  | Beschreibung                        |
 |----------|------------------------|-------------------------------------|
-| frontend | `fr172m/frontend:v0.1` | React-basiertes Frontend             |
-| backend  | `fr172m/backend:v0.1`  | Express-Server, verbindet Frontend, DB und Sandbox |
-| db       | `fr172m/db:v0.1`       | PostgreSQL Datenbank                |
-| sandbox  | `fr172m/sandbox:v0.1`  | Python-Interpreter Sandbox          |
+| frontend | `fr172m/frontend:v0.2` | React-basiertes Frontend             |
+| backend  | `fr172m/backend:v0.2`  | Express-Server, verbindet Frontend, DB und Sandbox |
+| db       | `fr172m/db:v0.2`       | PostgreSQL Datenbank                |
+| sandbox  | `fr172m/sandbox:v0.2`  | Python-Interpreter Sandbox          |
 
 ---
 
@@ -76,6 +76,9 @@ und dem Pull sowie Start der Container (Skript run.sh):
 •	Backend erreichbar unter: http://localhost:3000
 
 •	DB und Sandbox nutzen interne Volumes, um Daten zwischen Neustarts zu behalten
+
+•	es wird eine .env dynamisch erstellt durch das run.sh Skript
+
 
 ---
 ## Seeds

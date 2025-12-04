@@ -4,9 +4,8 @@ import fsSync from "fs";
 import {v4 as uuid} from "uuid";
 import {execSync} from "child_process";
 import axios from "axios";
+import {isDocker} from "../app";
 
-export const isDocker = fsSync.existsSync("/.dockerenv");
-console.log("isDocker:", isDocker);
 
 // Root-Pfade im Backend
 export const TMP_BASE = isDocker

@@ -33,7 +33,7 @@ Die **VR Robot Platform** ist ein TypeScript/Node + React (Vite) + PostgreSQL Pr
 │ │ ├─ utils/               # Helfer (DockerRunner, SimulationManager, tmpSimulationManager)
 │ │ ├─ public/uploads/      # Hochgeladene Dateien / Simulationen
 │ │ └─ seed/                # seedTasks.ts + Beispiel-Simulationen
-│ ├─ .env                   # lokal zu erstellen! Umgebungsvariablen (DB-Zugang etc.)
+│ ├─ .env.local                   # lokal zu erstellen! Umgebungsvariablen (DB-Zugang etc.)
 │ ├─ package.json           # Backend-spezifische Abhängigkeiten & Scripts
 │ └─ tsconfig.json          # TypeScript-Konfiguration
 │

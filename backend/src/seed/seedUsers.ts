@@ -1,8 +1,5 @@
 // backend/src/seed/seedUsers.ts
-import dotenv from 'dotenv';
-dotenv.config();
-
-import { query } from '../db';
+import { query } from '../app';
 import bcrypt from 'bcrypt';
 
 const seedUsers = async () => {

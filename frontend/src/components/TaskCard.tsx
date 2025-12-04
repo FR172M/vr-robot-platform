@@ -45,7 +45,7 @@ import TaskForm from './TaskForm';
 import {useTheme} from "@mui/material/styles";
 import {useColorMode} from "../ThemeContext";
 import {
-    fetchAllUsersAPI,
+    fetchAllUsersAPI, fetchEnvAPI,
     fetchMySolutionAPI,
     fetchTaskSolutionsAPI,
     getSimulationUrlAPI, runPythonCodeAPI,
@@ -1061,13 +1061,16 @@ const TaskCard = React.forwardRef<HTMLDivElement, TaskCardProps>((props, ref) =>
                                                                         const data = await runPythonCodeAPI(task.id, "solution", task.sampleSolution);
 
                                                                         console.log("Backend response:", data);
-
+                                                                        const isDocker = await fetchEnvAPI();
+                                                                        console.log('v___________________isDocker???___________________v')
+                                                                        console.log(isDocker)
+                                                                        const receivedCommands = isDocker ? data.output.output.commands : data.output.commands
                                                                         iframe.contentWindow.postMessage(
-                                                                            JSON.stringify(data.output.output.commands),
+                                                                            JSON.stringify(receivedCommands),
                                                                             "*"
                                                                         );
 
-                                                                        console.log("Commands sent to Unity:", data);
+                                                                        // console.log("Commands sent to Unity:", data);
 
                                                                         setResetRunSim(true);
                                                                     } catch (err) {

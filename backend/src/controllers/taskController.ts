@@ -4,7 +4,7 @@ import {createTask, getAllTasks, removeTask, updateTaskById} from '../models/Tas
 import { v4 as uuidv4 } from 'uuid';
 import path from "path";
 import fs from "fs";
-import {query} from "../db";
+import {query} from "../app";
 import {dbRowToTask} from "../utils/taskMapper";
 
 export const getTasks = async (req: Request, res: Response) => {

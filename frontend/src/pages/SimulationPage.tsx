@@ -35,6 +35,7 @@ import dayjs from "dayjs";
 import {useColorMode} from "../ThemeContext2";
 import Editor from '@monaco-editor/react';
 import {
+    fetchEnvAPI,
     fetchMySolutionAPI, fetchMyUserAPI,
     fetchTaskByIdAPI, getSimulationUrlAPI,
     listApiAPI,
@@ -128,15 +129,19 @@ const SimulationPage = ({variant}: SimulationPageProps) => {
                 return;
             }
 
-            if (!data.output?.output.commands || data.output.output.commands.length === 0) {
+            const isDocker = await fetchEnvAPI();
+            const receivedCommands = isDocker ? data.output.output.commands : data.output.commands
+
+
+            if (!receivedCommands || receivedCommands.length === 0) {
                 console.error("No commands returned from Python:", data);
                 alert("No commands returned from Python.");
                 return;
             }
-            console.log(data.output.output.commands)
+            console.log(receivedCommands)
 
             // Alles gut, Commands setzen
-            setPendingCommands(data.output.output.commands);
+            setPendingCommands(receivedCommands);
 
 
             setPendingDelay(delay);
@@ -287,7 +292,8 @@ const SimulationPage = ({variant}: SimulationPageProps) => {
 
                     try {
                         const data = await listApiAPI(taskId, 'work');
-                        const apiInfo = data.apiInfo.output.output || {};
+                        const isDocker = await fetchEnvAPI();
+                        const apiInfo = (isDocker? data.apiInfo.output.output:data.apiInfo.output) || {};
                         setApiInfo(apiInfo);
                         console.log(apiInfo)
                         if (Object.keys(apiInfo).length > 0) {

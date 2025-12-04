@@ -2,7 +2,7 @@
 import { Request, Response } from 'express';
 import path from 'path';
 import fs from 'fs';
-import { pool } from '../db';
+import { pool } from '../app';
 
 // --- Upload Simulation (Work Variant) ---
 export const uploadWorkSimulation = async (req: Request, res: Response) => {

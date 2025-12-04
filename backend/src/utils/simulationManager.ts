@@ -1,7 +1,7 @@
 import path from 'path';
 import fs from 'fs';
 import unzipper from 'unzipper';
-import { pool } from '../db';
+import { pool } from '../app';
 import { getOrCreateSimulationFolder, scheduleCleanup } from './tmpSimulationManager';
 
 export async function getSimulationZipPath(taskId: string, variant: 'work' | 'solution'): Promise<string | null> {

@@ -14,6 +14,7 @@ COPY . ./
 
 EXPOSE 3000
 
+# Startbefehle
 CMD npx ts-node src/seed/seedTasks.ts && \
     npx ts-node src/seed/seedUsers.ts && \
     npx ts-node src/seed/seedSolutions.ts && \

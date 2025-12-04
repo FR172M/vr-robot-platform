@@ -32,7 +32,7 @@ cd vr-robot-platform
 Erstelle im Verzeichnis backend/ eine Datei namens .env:
 ```bash
 cd backend
-touch .env
+touch .env.local
 ```
 
 Füge dann folgende Konfiguration ein:
@@ -144,7 +144,7 @@ Im Backend-Log sollte bei Python-Codeausführung eine Zeile ähnlich dieser ersc
 │ │ ├─ utils/               # Helfer (DockerRunner, SimulationManager, tmpSimulationManager)
 │ │ ├─ public/uploads/      # Hochgeladene Dateien / Simulationen
 │ │ └─ seed/                # seedTasks.ts + Beispiel-Simulationen
-│ ├─ .env                   # lokal zu erstellen! Umgebungsvariablen (DB-Zugang etc.)
+│ ├─ .env.local                   # lokal zu erstellen! Umgebungsvariablen (DB-Zugang etc.)
 │ ├─ package.json           # Backend-spezifische Abhängigkeiten & Scripts
 │ └─ tsconfig.json          # TypeScript-Konfiguration
 │
