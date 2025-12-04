@@ -8,6 +8,10 @@
 
 ---
 
+Das README.md ist auf dem Stand von Oktober 2025. Es wird derzeit an den aktuellen Stand angepasst!  
+
+---
+
 ## Kurze Zusammenfassung
 
 Die **VR Robot Platform** ist ein TypeScript/Node + React (Vite) + PostgreSQL Projekt, das Lehrenden erlaubt, Aufgaben mit Unity WebGL-Simulationen bereitzustellen, und Lernenden erlaubt, innerhalb einer WebGL-Simulation Pseudocode / Python-Code auszuführen, der in einer sicheren Umgebung (Docker) geparst/ausgeführt wird. Wichtige Implementationen:
