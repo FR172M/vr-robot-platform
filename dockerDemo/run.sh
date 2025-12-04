@@ -45,7 +45,7 @@ docker compose -f docker-compose.yml up -d
 echo "Warte auf Backend-Logs..."
 docker compose logs -f backend | while IFS= read -r line; do
     echo "$line"
-    if [[ "$line" == *"Server running at"* ]]; then
+    if [[ "$line" == *"Cleaning TMP folders on startup"* ]]; then
         echo "Backend ist bereit!"
         #pkill -P $$ docker  # killt den docker logs Prozess, nur in der Subshell nötig
         break
