@@ -18,9 +18,10 @@ services:
       - db
       - sandbox
     healthcheck:
-      test: [ "CMD", "curl", "-f", "http://localhost:3000/health" ]
+      test: ["CMD-SHELL", "nc -z localhost 3000 || exit 1"]
       interval: 5s
       retries: 12
+
 
   db:
     image: fr172m/db:v0.2
