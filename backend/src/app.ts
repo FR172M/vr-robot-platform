@@ -70,6 +70,12 @@ app.use('/api/env', authenticateJWT, (req, res) => {res.json({ isDocker });});
 app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));
 app.use('/tmp/simulations', express.static(path.join(__dirname, '../tmp/simulations')));
 
+
+// healthcheck
+app.get("/health", (req, res) => {
+    res.status(200).send("OK");
+});
+
 app.listen(PORT, '0.0.0.0', () => {
     console.log(`✅ Server running at http://localhost:${PORT}`);
 });
